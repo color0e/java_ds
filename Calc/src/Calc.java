@@ -1,7 +1,7 @@
 import java.util.EmptyStackException;
 import java.util.Scanner;
 
-public class Calc implements Calcinterface{
+public class Calc{
 	public int num_length(String exp) {
 		int count=0;
 		int index=0;
@@ -16,19 +16,73 @@ public class Calc implements Calcinterface{
 		}//for
 		return count;
 	}
-	@Override
 	public String Reverse(String xp) {
 		// TODO Auto-generated method stub
-		return null;
+		ListStack<Character> stack = new ListStack<Character>();
+		StringBuilder result = new StringBuilder();
+	      for(char c : xp.toCharArray()) {
+	      stack.push(c);
+	      }
+	      while(!stack.isEmpty()) 
+	      {
+	       result.append(stack.pop());
+	      }
+		return result.toString();
 	}
 
-	@Override
 	public String PFExpression(String infix) {
 		// TODO Auto-generated method stub
-		return null;
+		int index;
+		Character c2;
+		Character top;
+		StringBuilder result = new StringBuilder();
+		ListStack<Character> stack = new ListStack<Character>();
+		for(char c : infix.toCharArray()) {
+			index = (int)c-'A';
+			if(index<=25&&index>=0) {
+			  result.append(c);
+			  System.out.print(c+"=>");
+			}else if(c=='(') {
+				stack.push(c);
+			}else if(c==')') {
+				while(true) {
+					c2 = stack.pop();
+					if(c2=='(') {
+						break;
+					}else {
+						result.append(c2);
+						System.out.print(c2+"=>");
+					}
+				}
+			}else {
+				switch(c) {
+				case '+':
+				case '-':
+					while(!stack.isEmpty()&&(stack.peek()=='*'||stack.peek()=='/')) {
+						c2=stack.pop();
+						result.append(c2);
+						System.out.print(c2+"=>");
+					}
+					stack.push(c);
+					break;
+				case '*':
+				case '/':
+					stack.push(c);
+					break;
+				default:
+					break;
+				}
+			}
+		}
+		while(!stack.isEmpty()) {
+			char c3=stack.pop();
+			result.append(c3);
+			System.out.print(c3+"=>");
+		}
+		
+		return result.toString();
 	}
 
-	@Override
 	public Double PFCalculation(String exp, Double[] v) {
 		// TODO Auto-generated method stub
 		ListStack<Double> stack = new ListStack<Double>();
@@ -127,10 +181,29 @@ public class Calc implements Calcinterface{
 	}
 	
 	public static void main(String[] args) {
-		//3번 문제
-		String exp = "ABC*+D/";
-		//String exp = "BC*A+D-";
 		Calc c = new Calc();
+		String infix = "A*(B+C/D)";
+		String infix2 = "A+(B*C-D)";
+		System.out.println("수식 1:"+infix);
+		System.out.println("수식 2:"+infix2);
+		//1번문제
+		System.out.println("1. 중위표기법으로 표현된 수식 "+infix+"을 문자열의 역순으로 출력 ");
+	    System.out.println(c.Reverse(infix));
+	    System.out.println("   중위표기법으로 표현된 수식 "+infix2+"을 문자열의 역순으로 출력 ");
+	    System.out.println(c.Reverse(infix2));
+		//2번문제
+	    System.out.print("2. 중위표기식:"+infix+"의 변환과정 :");
+		String postfix = c.PFExpression(infix);
+		//System.out.println(postfix);
+		System.out.println();
+		System.out.print("   중위표기식:"+infix2+"의 변환과정 :");
+		String postfix2 = c.PFExpression(infix2);
+		System.out.println();
+		//System.out.println(postfix2);
+		//3번 문제
+		System.out.println("3. 후위표기식:"+postfix);
+		String exp = postfix;
+		//String exp = "BC*A+D-";
 		Double[] num=new Double[c.num_length(exp)];
 		Scanner sc = new Scanner(System.in);
 		for(int i=0;i<c.num_length(exp);i++) {
@@ -138,7 +211,17 @@ public class Calc implements Calcinterface{
 		num[i]=sc.nextDouble();
 		//System.out.println(num[i]);
 		}
-		System.out.println(c.PFCalculation(exp, num));
+		System.out.println("   후위표기식:"+postfix2);
+		String exp2 = postfix2;
+		//String exp = "BC*A+D-";
+		Double[] num2=new Double[c.num_length(exp2)];
+		for(int i=0;i<c.num_length(exp2);i++) {
+			System.out.print("피연산자"+(char)('A'+i)+":");
+		num2[i]=sc.nextDouble();
+		//System.out.println(num[i]);
+		}		
+		System.out.println("4."+postfix+"연산결과:"+c.PFCalculation(exp, num));
+		System.out.println("  "+postfix2+"연산결과:"+c.PFCalculation(exp2, num2));
 	}
 	
 }
